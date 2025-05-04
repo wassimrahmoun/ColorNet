@@ -45,7 +45,8 @@ export default function ImageComparison({ originalImage, colorizedImage }: Image
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto p-4">
+      {/* Control Bar */}
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" onClick={() => cycleViewMode("prev")}>
@@ -53,7 +54,11 @@ export default function ImageComparison({ originalImage, colorizedImage }: Image
           </Button>
 
           <span className="text-sm font-medium">
-            {viewMode === "split" ? "Split View" : viewMode === "side-by-side" ? "Side by Side" : "Before & After"}
+            {viewMode === "split" 
+              ? "Split View" 
+              : viewMode === "side-by-side" 
+                ? "Side by Side" 
+                : "Before & After"}
           </span>
 
           <Button variant="outline" size="icon" onClick={() => cycleViewMode("next")}>
@@ -69,34 +74,47 @@ export default function ImageComparison({ originalImage, colorizedImage }: Image
         )}
       </div>
 
+      {/* Split View */}
       {viewMode === "split" && (
-        <div className="relative h-[500px] overflow-hidden rounded-lg border" ref={containerRef}>
+        <div className="relative w-[256px] h-[128px] mx-auto overflow-hidden rounded-lg border" ref={containerRef}>
           {originalImage && (
             <img
-              src={originalImage || "/placeholder.svg"}
+              src={originalImage}
               alt="Original grayscale"
-              className="absolute top-0 left-0 w-full h-full object-contain"
+              className="absolute w-[128px] h-[128px] object-cover"
+              style={{ left: 0 }}
+              width={128}
+              height={128}
             />
           )}
 
           {colorizedImage && (
-            <div className="absolute top-0 left-0 h-full overflow-hidden" style={{ width: `${sliderPosition}%` }}>
+            <div 
+              className="absolute overflow-hidden"
+              style={{ 
+                width: `${sliderPosition}%`,
+                left: 0,
+                height: '128px'
+              }}
+            >
               <img
-                src={colorizedImage || "/placeholder.svg"}
+                src={colorizedImage}
                 alt="Colorized"
-                className="absolute top-0 left-0 w-full h-full object-contain"
+                className="w-[128px] h-[128px] object-cover"
+                width={128}
+                height={128}
               />
             </div>
           )}
 
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div
-              className="absolute left-0 top-0 bottom-0 w-0.5 bg-white shadow-lg pointer-events-auto cursor-ew-resize"
+              className="absolute top-0 bottom-0 w-0.5 bg-white shadow-lg pointer-events-auto cursor-ew-resize"
               style={{ left: `${sliderPosition}%` }}
             />
           </div>
 
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-1/2 min-w-[200px]">
+          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-3/4 min-w-[150px]">
             <Slider
               value={[sliderPosition]}
               min={0}
@@ -107,96 +125,106 @@ export default function ImageComparison({ originalImage, colorizedImage }: Image
             />
           </div>
 
-          <div className="absolute top-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded">Original</div>
+          <div className="absolute top-1 left-1 bg-black/50 text-white text-xs px-1 py-0.5 rounded">
+            Original
+          </div>
 
-          <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">Colorized</div>
+          <div className="absolute top-1 right-1 bg-black/50 text-white text-xs px-1 py-0.5 rounded">
+            Colorized
+          </div>
         </div>
       )}
 
+      {/* Side-by-Side View */}
       {viewMode === "side-by-side" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <motion.div
+        <div className="flex justify-center gap-4">
+          <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.3 }}
-            className="relative rounded-lg border overflow-hidden"
+            className="w-[128px] h-[128px] rounded-lg border overflow-hidden"
           >
-            {originalImage && (
-              <div className="h-[400px]">
-                <img
-                  src={originalImage || "/placeholder.svg"}
-                  alt="Original grayscale"
-                  className="w-full h-full object-contain"
-                />
+            {originalImage ? (
+              <img
+                src={originalImage}
+                alt="Original grayscale"
+                className="w-full h-full object-cover"
+                width={128}
+                height={128}
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                <p className="text-xs text-gray-500">Original</p>
               </div>
             )}
-            <div className="absolute top-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded">Original</div>
           </motion.div>
 
-          <motion.div
+          <motion.div 
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.3 }}
-            className="relative rounded-lg border overflow-hidden"
+            className="w-[128px] h-[128px] rounded-lg border overflow-hidden"
           >
             {colorizedImage ? (
-              <div className="h-[400px]">
-                <img
-                  src={colorizedImage || "/placeholder.svg"}
-                  alt="Colorized"
-                  className="w-full h-full object-contain"
-                />
-              </div>
+              <img
+                src={colorizedImage}
+                alt="Colorized"
+                className="w-full h-full object-cover"
+                width={128}
+                height={128}
+              />
             ) : (
-              <div className="h-[400px] flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-                <p className="text-gray-500 dark:text-gray-400">Processing...</p>
+              <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                <p className="text-xs text-gray-500">Colorized</p>
               </div>
             )}
-            <div className="absolute top-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded">Colorized</div>
           </motion.div>
         </div>
       )}
 
+      {/* Before-After View */}
       {viewMode === "before-after" && (
-        <div className="space-y-4">
-          <motion.div
+        <div className="flex flex-col items-center gap-4">
+          <motion.div 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="relative rounded-lg border overflow-hidden"
+            className="w-[128px] h-[128px] rounded-lg border overflow-hidden"
           >
-            {originalImage && (
-              <div className="h-[400px]">
-                <img
-                  src={originalImage || "/placeholder.svg"}
-                  alt="Original grayscale"
-                  className="w-full h-full object-contain"
-                />
+            {originalImage ? (
+              <img
+                src={originalImage}
+                alt="Original grayscale"
+                className="w-full h-full object-cover"
+                width={128}
+                height={128}
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                <p className="text-xs text-gray-500">Before</p>
               </div>
             )}
-            <div className="absolute top-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded">Before</div>
           </motion.div>
 
-          <motion.div
+          <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="relative rounded-lg border overflow-hidden"
+            className="w-[128px] h-[128px] rounded-lg border overflow-hidden"
           >
             {colorizedImage ? (
-              <div className="h-[400px]">
-                <img
-                  src={colorizedImage || "/placeholder.svg"}
-                  alt="Colorized"
-                  className="w-full h-full object-contain"
-                />
-              </div>
+              <img
+                src={colorizedImage}
+                alt="Colorized"
+                className="w-full h-full object-cover"
+                width={128}
+                height={128}
+              />
             ) : (
-              <div className="h-[400px] flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-                <p className="text-gray-500 dark:text-gray-400">Processing...</p>
+              <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                <p className="text-xs text-gray-500">After</p>
               </div>
             )}
-            <div className="absolute top-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded">After</div>
           </motion.div>
         </div>
       )}
