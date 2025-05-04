@@ -6,7 +6,7 @@ import numpy as np
 import io
 import uvicorn
 import tensorflow as tf
-import traceback  # Add this for better error logging
+import traceback  
 
 app = FastAPI(
     title="Image Colorization API",
@@ -34,20 +34,19 @@ IMG_SIZE = 128
 
 def preprocess_uploaded_image(image):
     try:
-        # Convert to RGB first (handles PNG transparency, etc.)
+       
         if image.mode != 'RGB':
             image = image.convert('RGB')
         
-        # Convert to numpy array and normalize like in training
+
         img_array = np.array(image, dtype=np.float32) / 255.0
         
-        # Resize using TensorFlow to match training pipeline
+    
         img_array = tf.image.resize(img_array, [IMG_SIZE, IMG_SIZE])
         
-        # Convert to grayscale like in training
+     
         gray = tf.image.rgb_to_grayscale(img_array)
         
-        # Add batch dimension
         return np.expand_dims(gray, axis=0)
     
     except Exception as e:
